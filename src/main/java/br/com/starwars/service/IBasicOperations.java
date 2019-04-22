@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
  */
 public interface IBasicOperations<T extends Serializable> {
 
-    T findOne(final long id);
+    T findOne(final Integer id);
 
     List<T> findAll();
 
@@ -25,6 +25,5 @@ public interface IBasicOperations<T extends Serializable> {
 
     void delete(final T entity);
 
-    void deleteById(final long entityId);
-
+    void deleteById(final Integer entityId);
 }

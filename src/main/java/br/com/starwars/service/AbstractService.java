@@ -21,7 +21,7 @@ public abstract class AbstractService<T extends Serializable> implements IBasicO
 
     @Override
     @Transactional(readOnly = true)
-    public T findOne(final long id) {
+    public T findOne(final Integer id) {
         return getDao().findById(id).orElse(null);
     }
 
@@ -52,9 +52,9 @@ public abstract class AbstractService<T extends Serializable> implements IBasicO
     }
 
     @Override
-    public void deleteById(final long entityId) {
+    public void deleteById(final Integer entityId) {
         getDao().deleteById(entityId);
     }
 
-    protected abstract PagingAndSortingRepository<T, Long> getDao();
+    protected abstract PagingAndSortingRepository<T, Integer> getDao();
 }

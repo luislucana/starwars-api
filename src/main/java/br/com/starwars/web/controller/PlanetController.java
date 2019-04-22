@@ -50,7 +50,7 @@ public class PlanetController {
 	public Planet create(@RequestBody final Planet planet, final HttpServletResponse response) {
 		Preconditions.checkNotNull(planet);
 		
-		final Planet newPlanet = planetService.createPlanet(planet);
+		final Planet newPlanet = planetService.create(planet);
         final Integer newPlanetId = newPlanet.getId();
         
         eventPublisher.publishEvent(new ResourceCreatedEvent(this, response, newPlanetId));
@@ -92,9 +92,9 @@ public class PlanetController {
 	
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
-	public Planet getById(@PathVariable final String id, final HttpServletResponse response) {
+	public Planet getById(@PathVariable final Integer id, final HttpServletResponse response) {
 		
-		final Planet planet = RestPreconditions.checkFound(planetService.findOne(Long.valueOf(id)));
+		final Planet planet = RestPreconditions.checkFound(planetService.findOne(id));
 
         eventPublisher.publishEvent(new SingleResourceRetrievedEvent(this, response));
         
@@ -105,7 +105,7 @@ public class PlanetController {
 	@ResponseStatus(HttpStatus.OK)
 	public Planet getByName(@PathVariable final String name, final HttpServletResponse response) {
 		
-		final Planet planet = RestPreconditions.checkFound(planetService.findOne(Long.valueOf(name)));
+		final Planet planet = RestPreconditions.checkFound(planetService.findOne(Integer.valueOf(name)));
 
         eventPublisher.publishEvent(new SingleResourceRetrievedEvent(this, response));
         
@@ -114,7 +114,7 @@ public class PlanetController {
 	
 	@DeleteMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void delete(@PathVariable final String id) {
-		planetService.deleteById(Long.valueOf(id));
+	public void delete(@PathVariable final Integer id) {
+		planetService.deleteById(id);
 	}
 }

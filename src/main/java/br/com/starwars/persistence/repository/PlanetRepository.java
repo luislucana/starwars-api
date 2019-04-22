@@ -12,7 +12,7 @@ import br.com.starwars.persistence.model.Planet;
  *
  */
 @Repository
-public interface PlanetRepository extends PagingAndSortingRepository<Planet, Long> {
+public interface PlanetRepository extends PagingAndSortingRepository<Planet, Integer> {
 	
 	public Planet findByName(String name);
 }

@@ -10,13 +10,19 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 
+import br.com.starwars.service.dto.PlanetList;
+import br.com.starwars.service.dto.Result;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Classe utilitaria para fazer chamada remota para a Swapi API.
  * 
  * @author Luis Lucana (luislucana@gmail.com)
  *
  */
-public class SwapiRest {
+public class SwapiRestUtil {
 
 	private static final String SWAPI_API_URL = "https://swapi.co/api/planets?format=json";
 
@@ -39,7 +45,9 @@ public class SwapiRest {
 		return response;
 	}*/
 	
-	private static String getPlanetsFromSwapiAPI() throws IOException {
+	public static PlanetList getPlanetsFromSwapiAPI() throws IOException {
+		PlanetList planets = null;
+		
 		String content = null;
 
 		HttpGet httpGet = new HttpGet(SWAPI_API_URL);
@@ -57,15 +65,10 @@ public class SwapiRest {
 		} finally {
 			EntityUtils.consume(httpEntity);
 		}
-
-		return content;
-	}
-	
-	public static void main(String[] args) throws IOException {
-		System.out.println("INICIO");
 		
-		String responseBody = getPlanetsFromSwapiAPI();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		planets = gson.fromJson(content, PlanetList.class);
 		
-		System.out.println(String.valueOf(responseBody));
+		return planets;
 	}
 }

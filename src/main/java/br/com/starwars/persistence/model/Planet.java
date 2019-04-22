@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 @Entity
@@ -19,12 +20,15 @@ public class Planet implements Serializable {
     @Column(name = "id")
 	private Integer id;
 	
+	@NotNull
 	@Column(name = "name", nullable = false)
     private String name;
 	
+	@NotNull
 	@Column(name = "climate", nullable = false)
     private String climate;
 	
+	@NotNull
 	@Column(name = "terrain", nullable = false)
     private String terrain;
 
