@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-//@EnableAutoConfiguration
 @ComponentScan("br.com.starwars.*")
 @EntityScan("br.com.starwars.persistence.model")
 @EnableJpaRepositories("br.com.starwars.persistence.repository")
