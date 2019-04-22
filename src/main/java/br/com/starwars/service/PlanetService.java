@@ -41,6 +41,8 @@ public class PlanetService extends AbstractService<Planet> {
 	
 	@Transactional
 	public Planet create(Planet planet) {
+		Planet createdPlanet = null;
+		Result swapiApiPlanet = null;
 		
 		if (planet == null) {
 			throw new RuntimeException("Objeto planet nao pode ser nulo");
@@ -62,28 +64,45 @@ public class PlanetService extends AbstractService<Planet> {
 			for (Result planetFromAPI : planetList) {
 				String name = planetFromAPI.getName();
 				
-				if (name.equals(informedName)) {
+				if (name != null && name.equals(informedName)) {
 					validName = true;
+					swapiApiPlanet = planetFromAPI;
 					break;
 				}
 			}
 			
 			if (!validName) {
-				throw new RuntimeException("");
+				throw new RuntimeException("Nome de planeta invalido.");
 			}
+			
+			planet.setTerrain(swapiApiPlanet.getTerrain());
+			planet.setClimate(swapiApiPlanet.getClimate());
+			
+			createdPlanet = super.create(planet);
+			
 		} catch (IOException e) {
 			throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
 		}
 		
-		return create(planet);
+		return createdPlanet;
 	}
 	
 	public Page<Planet> getAllPlanetsFromDatabase(Pageable pageable) {
 		return getDao().findAll(pageable);
 	}
 	
-	public Page<Planet> getAllPlanetsFromRemoteAPI(Pageable pageable) {
-		return null;
+	public List<Result> getAllPlanetsFromRemoteAPI(Pageable pageable) {
+		
+		List<Result> results = null;
+		
+		try {
+			PlanetList planets = SwapiRestUtil.getPlanetsFromSwapiAPI();
+			results = planets.getResults();
+		} catch (IOException e) {
+			throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
+		}
+		
+		return results;
 	}
 	
 	public Planet findByName(String name) {
