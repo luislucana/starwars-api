@@ -1,5 +1,10 @@
 package br.com.starwars.web.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +27,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.starwars.persistence.model.Planet;
 import br.com.starwars.service.PlanetService;
+import br.com.starwars.service.dto.Result;
 import br.com.starwars.web.event.PaginatedResultsRetrievedEvent;
 import br.com.starwars.web.event.ResourceCreatedEvent;
 import br.com.starwars.web.event.SingleResourceRetrievedEvent;
@@ -37,6 +43,7 @@ import com.google.common.base.Preconditions;
  */
 @RestController
 @RequestMapping(value = "/planets")
+@Api(tags = {"Planets API"})
 public class PlanetController {
 	
 	@Autowired
@@ -47,6 +54,12 @@ public class PlanetController {
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation(value="Create planet", notes="Creates a new planet.")
+	@ApiResponses(value ={@ApiResponse(code = 201, message = "Planet created"/*, response = Response.class*/),
+						  @ApiResponse(code = 400, message = "Bad Request"),
+			  			  @ApiResponse(code = 403, message = "Forbidden"),
+			  			  @ApiResponse(code = 404, message = "Not Found"),
+			  			  @ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
 	public Planet create(@RequestBody final Planet planet, final HttpServletResponse response) {
 		Preconditions.checkNotNull(planet);
 		
@@ -60,6 +73,11 @@ public class PlanetController {
 	
 	@GetMapping(value = "/listFromDatabase", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
+	@ApiOperation(value="Get planets", notes = "Gets a list of planets from database.")
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "OK"),
+							@ApiResponse(code = 400, message = "Bad Request"),
+							@ApiResponse(code = 403, message = "Forbidden"),
+							@ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
 	public List<Planet> listFromDatabase(Pageable pageable, final UriComponentsBuilder uriBuilder, final HttpServletResponse response) {
 		
         final Page<Planet> resultPage = planetService.findPaginated(pageable.getPageNumber(), pageable.getPageSize());
@@ -76,18 +94,24 @@ public class PlanetController {
 	
 	@GetMapping(value = "/listFromWeb", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
-	public List<Planet> listFromWeb(Pageable pageable, final UriComponentsBuilder uriBuilder, final HttpServletResponse response) {
+	@ApiOperation(value="Get planets", notes = "Gets a list of planets from de Swapi API.")
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "OK"),
+							@ApiResponse(code = 400, message = "Bad Request"),
+							@ApiResponse(code = 403, message = "Forbidden"),
+							@ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
+	public List<Result> listFromWeb(Pageable pageable, final UriComponentsBuilder uriBuilder, final HttpServletResponse response) {
 		
-		final Page<Planet> resultPage = planetService.getAllPlanetsFromRemoteAPI(pageable);
+		//final Page<Planet> resultPage = planetService.getAllPlanetsFromRemoteAPI(pageable);
+		List<Result> allPlanetsFromRemoteAPI = planetService.getAllPlanetsFromRemoteAPI(pageable);
         
-        if (pageable.getPageNumber() > resultPage.getTotalPages()) {
-        	throw new RuntimeException("MyResourceNotFoundException");
-        }
+        //if (pageable.getPageNumber() > resultPage.getTotalPages()) {
+        	//throw new RuntimeException("MyResourceNotFoundException");
+        //}
         
-        eventPublisher.publishEvent(new PaginatedResultsRetrievedEvent<Planet>(Planet.class, uriBuilder, response,
-            pageable.getPageNumber(), resultPage.getTotalPages(), pageable.getPageSize()));
+        //eventPublisher.publishEvent(new PaginatedResultsRetrievedEvent<Planet>(Planet.class, uriBuilder, response,
+            //pageable.getPageNumber(), resultPage.getTotalPages(), pageable.getPageSize()));
 
-        return resultPage.getContent();
+        return allPlanetsFromRemoteAPI;
 	}
 	
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

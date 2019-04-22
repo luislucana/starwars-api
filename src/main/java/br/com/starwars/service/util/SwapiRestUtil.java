@@ -11,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 
 import br.com.starwars.service.dto.PlanetList;
-import br.com.starwars.service.dto.Result;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
