@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: starwars-api
+Implementation-Version: 1.0.0
+Built-By: Luis Lucana
+Implementation-Vendor-Id: br.com
+Created-By: Apache Maven 3.5.3
+Build-Jdk: 1.8.0_201
+Implementation-URL: https://github.com/luislucana/
+
+Main-Class: br.com.starwars.Application
