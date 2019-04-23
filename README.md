@@ -14,7 +14,7 @@ Este API foi desenvolvida para atender aos requisitos da [prova técnica](https:
 
 ## Instruções para executar a API
 
-Esta API foi disponibilizada no endereço: http://ec2-18-222-158-1.us-east-2.compute.amazonaws.com:8080/swagger-ui.html
+Esta API foi disponibilizada para testes no endereço: http://ec2-18-222-158-1.us-east-2.compute.amazonaws.com:8080/swagger-ui.html
 
 Esse endereço corresponde ao Swagger da API, onde se encontra um documento técnico ilustrando quais são os endpoints disponíveis e seus formatos de request e response.
 
@@ -28,4 +28,4 @@ Nota: É necessário que o JRE 1.8 esteja instalado.
 
 Nota (2): É necessário que o server do MySQL esteja sendo executado para que a aplicação possa inicializar.
 
-### Ilustração do swagger: https://monosnap.com/file/lm2piASkQU1NKh1d4IYmeuAvUkwxrq
+#### Ilustração do swagger: https://monosnap.com/file/lm2piASkQU1NKh1d4IYmeuAvUkwxrq
