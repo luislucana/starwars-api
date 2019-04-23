@@ -53,7 +53,7 @@ public class PlanetService extends AbstractService<Planet> {
 		try {
 			PageImpl<Result> planetsFromSwapiAPI = SwapiRestUtil.getPlanetsFromSwapiAPI(null);
 			
-			if (planetsFromSwapiAPI == null) {
+			if (planetsFromSwapiAPI == null || planetsFromSwapiAPI.isEmpty()) {
 				throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
 			}
 			

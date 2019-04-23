@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 
 import br.com.starwars.service.dto.PlanetList;
 import br.com.starwars.service.dto.Result;
+import br.com.starwars.web.exception.ResourceNotFoundException;
 
 /**
  * Classe utilitaria para fazer chamada remota para a Swapi API.
@@ -33,27 +34,8 @@ import br.com.starwars.service.dto.Result;
  */
 public class SwapiRestUtil {
 
-	private static final String SWAPI_API_URL = "https://swapi.co/api/planets?format=json";
+	private static final String SWAPI_API_URL = "https://swapi.co/api/planets";
 
-	/*public static ResponseEntity<String> getPlanetsFromSwapiAPI(Pageable pageable) {
-		ResponseEntity<String> response = null;
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-		try {
-			response = new RestTemplate().exchange(SWAPI_API_URL + "?page=" + pageable.getPageNumber(), 
-					HttpMethod.GET,
-					new HttpEntity<String>("parameters", headers), String.class);
-
-		} catch (Exception exception) {
-			throw new RuntimeException("Swapi API nao esta disponivel no momento. Tente novamente mais tarde.",
-					exception);
-		}
-
-		return response;
-	}*/
-	
 	public static PageImpl<Result> getPlanetsFromSwapiAPI(Pageable pageable) throws IOException {
 		PlanetList planets = null;
 		String content = null;
@@ -67,7 +49,7 @@ public class SwapiRestUtil {
 				CloseableHttpResponse response = httpClient.execute(httpGet)) {
 			
 			if (response.getStatusLine().getStatusCode() != HttpStatus.OK.value()) {
-				throw new RuntimeException("Nao foi possivel obter o conteudo do endereco: " + SWAPI_API_URL);
+				throw new ResourceNotFoundException("Nao foi possivel obter o conteudo do endereco: " + SWAPI_API_URL);
 			}
 
 			httpEntity = response.getEntity();
