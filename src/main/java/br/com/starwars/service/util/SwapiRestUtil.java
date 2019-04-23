@@ -35,6 +35,36 @@ import br.com.starwars.web.exception.ResourceNotFoundException;
 public class SwapiRestUtil {
 
 	private static final String SWAPI_API_URL = "https://swapi.co/api/planets";
+	
+	public static List<Result> getPlanetsFromSwapiAPI() throws IOException {
+		PlanetList planets = null;
+		String content = null;
+		
+		URI uri = buildURIWithParameters(SWAPI_API_URL, null);
+
+		HttpGet httpGet = new HttpGet(uri);
+		HttpEntity httpEntity = null;
+
+		try (CloseableHttpClient httpClient = HttpClients.createDefault();
+				CloseableHttpResponse response = httpClient.execute(httpGet)) {
+			
+			if (response.getStatusLine().getStatusCode() != HttpStatus.OK.value()) {
+				throw new ResourceNotFoundException();
+			}
+
+			httpEntity = response.getEntity();
+			content = EntityUtils.toString(httpEntity);
+		} finally {
+			EntityUtils.consume(httpEntity);
+		}
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		planets = gson.fromJson(content, PlanetList.class);
+		
+		List<Result> results = planets.getResults();
+		
+		return results;
+	}
 
 	public static PageImpl<Result> getPlanetsFromSwapiAPI(Pageable pageable) throws IOException {
 		PlanetList planets = null;
@@ -49,7 +79,7 @@ public class SwapiRestUtil {
 				CloseableHttpResponse response = httpClient.execute(httpGet)) {
 			
 			if (response.getStatusLine().getStatusCode() != HttpStatus.OK.value()) {
-				throw new ResourceNotFoundException("Nao foi possivel obter o conteudo do endereco: " + SWAPI_API_URL);
+				throw new ResourceNotFoundException();
 			}
 
 			httpEntity = response.getEntity();
@@ -62,6 +92,10 @@ public class SwapiRestUtil {
 		planets = gson.fromJson(content, PlanetList.class);
 		
 		List<Result> results = planets.getResults();
+		
+		if (pageable == null) {
+			return new PageImpl<Result>(results, pageable, results.size());
+		}
 		
 		int start = (int) pageable.getOffset();
 		int end = (start + pageable.getPageSize()) > results.size() ? results.size() : (start + pageable.getPageSize());
@@ -76,7 +110,7 @@ public class SwapiRestUtil {
 			builder = new URIBuilder(url);
 			builder.setParameter("format", "json");
 			
-			if (pageable != null) {
+			if (pageable != null && pageable.getPageNumber() > 0) {
 				builder.setParameter("page", String.valueOf(pageable.getPageNumber()));
 				builder.setParameter("size", String.valueOf(pageable.getPageSize()));
 				

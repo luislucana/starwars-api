@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,9 +14,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.starwars.persistence.model.Planet;
 import br.com.starwars.persistence.repository.PlanetRepository;
-import br.com.starwars.service.dto.PlanetList;
 import br.com.starwars.service.dto.Result;
 import br.com.starwars.service.util.SwapiRestUtil;
+import br.com.starwars.web.exception.InvalidPlanetNameException;
+import br.com.starwars.web.exception.ResourceNotFoundException;
 
 /**
  * Classe de servico para a entidade Planet.
@@ -51,7 +51,7 @@ public class PlanetService extends AbstractService<Planet> {
 		
 		// verificar se existe na API do swapi
 		try {
-			PageImpl<Result> planetsFromSwapiAPI = SwapiRestUtil.getPlanetsFromSwapiAPI(null);
+			List<Result> planetsFromSwapiAPI = SwapiRestUtil.getPlanetsFromSwapiAPI();
 			
 			if (planetsFromSwapiAPI == null || planetsFromSwapiAPI.isEmpty()) {
 				throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
@@ -71,11 +71,20 @@ public class PlanetService extends AbstractService<Planet> {
 			}
 			
 			if (!validName) {
-				throw new RuntimeException("Nome de planeta invalido.");
+				throw new InvalidPlanetNameException("Nome de planeta invalido.");
 			}
 			
 			planet.setTerrain(swapiApiPlanet.getTerrain());
 			planet.setClimate(swapiApiPlanet.getClimate());
+			
+			Integer filmsQuantity = Integer.valueOf(0);
+			List<String> films = swapiApiPlanet.getFilms();
+			
+			if (films != null && !films.isEmpty()) {
+				filmsQuantity = films.size();
+			}
+			
+			planet.setFilmsQuantity(filmsQuantity);
 			
 			createdPlanet = super.create(planet);
 			
@@ -104,7 +113,7 @@ public class PlanetService extends AbstractService<Planet> {
 	}
 	
 	public Planet findByName(String name) {
-		return planetRepository.findByName(name);
+		return planetRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Planet nao encontrado."));
 	}
 	
 	public Planet getPlanet(Integer id) {

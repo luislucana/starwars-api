@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class Planet implements Serializable {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
 	private Integer id;
 	
@@ -31,6 +31,10 @@ public class Planet implements Serializable {
 	@NotNull
 	@Column(name = "terrain", nullable = false)
     private String terrain;
+	
+	@NotNull
+	@Column(name = "films_quantity", nullable = false)
+	private Integer filmsQuantity;
 
 	public Integer getId() {
 		return id;
@@ -62,5 +66,13 @@ public class Planet implements Serializable {
 
 	public void setTerrain(String terrain) {
 		this.terrain = terrain;
+	}
+
+	public Integer getFilmsQuantity() {
+		return filmsQuantity;
+	}
+
+	public void setFilmsQuantity(Integer filmsQuantity) {
+		this.filmsQuantity = filmsQuantity;
 	}
 }

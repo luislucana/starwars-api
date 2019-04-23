@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
+import br.com.starwars.web.exception.ResourceNotFoundException;
+
 /**
  * Implementacao de servicos basicos.
  * 
@@ -22,7 +24,7 @@ public abstract class AbstractService<T extends Serializable> implements IBasicO
     @Override
     @Transactional(readOnly = true)
     public T findOne(final Integer id) {
-        return getDao().findById(id).orElse(null);
+        return getDao().findById(id).orElseThrow(() -> new ResourceNotFoundException("Planet nao encontrado."));
     }
 
     @Override

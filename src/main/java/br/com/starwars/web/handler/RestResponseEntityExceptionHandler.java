@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.com.starwars.web.exception.InvalidPlanetNameException;
 import br.com.starwars.web.exception.ResourceNotFoundException;
 
 /**
@@ -59,12 +60,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		final String responseBody = "This should be application specific";
 		return handleExceptionInternal(ex, responseBody, headers, HttpStatus.BAD_REQUEST, request);
 	}
+	
+	// 403
+	@ExceptionHandler(value = { InvalidPlanetNameException.class })
+	@ResponseBody
+	protected ResponseEntity<Object> handleForbidden(final InvalidPlanetNameException ex, final WebRequest request) {
+		JsonResponseMessageBody responseBodyJson = new JsonResponseMessageBody(
+				ex.getMessage() != null ? ex.getMessage() : "Operacao nao permitida.");
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		return handleExceptionInternal(ex, responseBodyJson, httpHeaders, HttpStatus.FORBIDDEN, request);
+	}
 
 	// 404
 	@ExceptionHandler(value = { EntityNotFoundException.class, ResourceNotFoundException.class })
 	@ResponseBody
 	protected ResponseEntity<Object> handleNotFound(final RuntimeException ex, final WebRequest request) {
-		JsonResponseMessageBody responseBodyJson = new JsonResponseMessageBody("Registro nao encontrado.");
+		JsonResponseMessageBody responseBodyJson = new JsonResponseMessageBody(
+				ex.getMessage() != null ? ex.getMessage() : "Registro nao encontrado.");
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		return handleExceptionInternal(ex, responseBodyJson, httpHeaders, HttpStatus.NOT_FOUND, request);
