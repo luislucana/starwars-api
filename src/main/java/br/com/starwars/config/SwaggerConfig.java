@@ -46,6 +46,6 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
     	Contact contact = null;
-    	return new ApiInfo("Star Wars Planets API", "Star Wars Planets API.", env.getRequiredProperty("build.version"), "", contact, "", "");
+    	return new ApiInfo("Star Wars Planets API", "Star Wars Planets API.", "1.0", "", contact, "", "");
     }
 }
