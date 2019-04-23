@@ -60,8 +60,11 @@ public class PlanetController {
 			  			  @ApiResponse(code = 403, message = "Forbidden"),
 			  			  @ApiResponse(code = 404, message = "Not Found"),
 			  			  @ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
-	public Planet create(@RequestBody final Planet planet, final HttpServletResponse response) {
-		Preconditions.checkNotNull(planet);
+	public Planet create(@RequestBody final PlanetRequest planetRequest, final HttpServletResponse response) {
+		Preconditions.checkNotNull(planetRequest);
+		
+		Planet planet = new Planet();
+		planet.setName(planetRequest.getName());
 		
 		final Planet newPlanet = planetService.create(planet);
         final Integer newPlanetId = newPlanet.getId();
