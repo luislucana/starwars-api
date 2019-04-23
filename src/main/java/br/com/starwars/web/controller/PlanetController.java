@@ -156,6 +156,6 @@ public class PlanetController {
 							@ApiResponse(code = 403, message = "Forbidden"),
 							@ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
 	public void delete(@PathVariable final Integer id) {
-		planetService.deleteById(id);
+		planetService.deletePlanet(id);
 	}
 }
