@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
@@ -50,18 +51,16 @@ public class PlanetService extends AbstractService<Planet> {
 		
 		// verificar se existe na API do swapi
 		try {
-			PlanetList planets = SwapiRestUtil.getPlanetsFromSwapiAPI();
+			PageImpl<Result> planetsFromSwapiAPI = SwapiRestUtil.getPlanetsFromSwapiAPI(null);
 			
-			if (planets == null) {
+			if (planetsFromSwapiAPI == null) {
 				throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
 			}
-			
-			List<Result> planetList = planets.getResults();
 			
 			boolean validName = false;
 			String informedName = planet.getName();
 			
-			for (Result planetFromAPI : planetList) {
+			for (Result planetFromAPI : planetsFromSwapiAPI) {
 				String name = planetFromAPI.getName();
 				
 				if (name != null && name.equals(informedName)) {
@@ -91,13 +90,12 @@ public class PlanetService extends AbstractService<Planet> {
 		return getDao().findAll(pageable);
 	}
 	
-	public List<Result> getAllPlanetsFromRemoteAPI(Pageable pageable) {
+	public PageImpl<Result> getAllPlanetsFromRemoteAPI(Pageable pageable) {
 		
-		List<Result> results = null;
+		PageImpl<Result> results = null;
 		
 		try {
-			PlanetList planets = SwapiRestUtil.getPlanetsFromSwapiAPI();
-			results = planets.getResults();
+			results = SwapiRestUtil.getPlanetsFromSwapiAPI(pageable);
 		} catch (IOException e) {
 			throw new RuntimeException("Swapi API indisponivel no momento. Tente novamente mais tarde.");
 		}

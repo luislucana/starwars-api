@@ -1,10 +1,5 @@
 package br.com.starwars.web.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.base.Preconditions;
+
 import br.com.starwars.persistence.model.Planet;
 import br.com.starwars.service.PlanetService;
 import br.com.starwars.service.dto.Result;
@@ -32,8 +30,10 @@ import br.com.starwars.web.event.PaginatedResultsRetrievedEvent;
 import br.com.starwars.web.event.ResourceCreatedEvent;
 import br.com.starwars.web.event.SingleResourceRetrievedEvent;
 import br.com.starwars.web.util.RestPreconditions;
-
-import com.google.common.base.Preconditions;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 /**
  * Classe controller para operacoes da entidade Planet.
@@ -99,19 +99,18 @@ public class PlanetController {
 							@ApiResponse(code = 400, message = "Bad Request"),
 							@ApiResponse(code = 403, message = "Forbidden"),
 							@ApiResponse(code = 500, message = "Error"/*, response = Exception.class*/)})
-	public List<Result> listFromWeb(Pageable pageable, final UriComponentsBuilder uriBuilder, final HttpServletResponse response) {
+	public Page<Result> listFromWeb(Pageable pageable, final UriComponentsBuilder uriBuilder, final HttpServletResponse response) {
 		
-		//final Page<Planet> resultPage = planetService.getAllPlanetsFromRemoteAPI(pageable);
-		List<Result> allPlanetsFromRemoteAPI = planetService.getAllPlanetsFromRemoteAPI(pageable);
+		PageImpl<Result> allPlanetsFromRemoteAPI = planetService.getAllPlanetsFromRemoteAPI(pageable);
         
-        //if (pageable.getPageNumber() > resultPage.getTotalPages()) {
-        	//throw new RuntimeException("MyResourceNotFoundException");
-        //}
+        if (pageable.getPageNumber() > allPlanetsFromRemoteAPI.getTotalPages()) {
+        	throw new RuntimeException("MyResourceNotFoundException");
+        }
         
-        //eventPublisher.publishEvent(new PaginatedResultsRetrievedEvent<Planet>(Planet.class, uriBuilder, response,
-            //pageable.getPageNumber(), resultPage.getTotalPages(), pageable.getPageSize()));
+        eventPublisher.publishEvent(new PaginatedResultsRetrievedEvent<Planet>(Planet.class, uriBuilder, response,
+            pageable.getPageNumber(), allPlanetsFromRemoteAPI.getTotalPages(), pageable.getPageSize()));
 
-        return allPlanetsFromRemoteAPI;
+		return allPlanetsFromRemoteAPI;
 	}
 	
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
