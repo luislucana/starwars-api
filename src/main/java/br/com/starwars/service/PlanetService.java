@@ -121,6 +121,12 @@ public class PlanetService extends AbstractService<Planet> {
 	}
 	
 	public void deletePlanet(Integer id) {
+		boolean exists = planetRepository.existsById(id);
+		
+		if (!exists) {
+			throw new ResourceNotFoundException("Planet com ID=" + String.valueOf(id) + " nao encontrado.");
+		}
+		
 		deleteById(id);
 	}
 }
